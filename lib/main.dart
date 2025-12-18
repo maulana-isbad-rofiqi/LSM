@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-// Ganti 'lms_app' di bawah ini sesuai nama proyek yang kamu buat di terminal tadi
-import 'package:lms_app/screens/login_screen.dart'; 
+import 'package:lms_app/screens/login_screen.dart';
 
 void main() {
   runApp(const LMSApp());
@@ -12,11 +11,13 @@ class LMSApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'LMS App',
+      title: 'CeLoe LMS',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        // Menggunakan warna Biru Navy khas CeLoe
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF004684)),
         useMaterial3: true,
+        scaffoldBackgroundColor: Colors.white,
       ),
       home: const LoginScreen(),
     );

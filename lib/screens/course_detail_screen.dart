@@ -7,56 +7,49 @@ class CourseDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Detail Kursus"),
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-      ),
-      body: Column(
+      appBar: AppBar(title: const Text("Detail Kursus")),
+      body: ListView(
         children: [
-          // Header Video Placeholder
           Container(
-            height: 200,
-            width: double.infinity,
-            color: Colors.black87,
-            child: const Icon(Icons.play_circle_fill, size: 100, color: Colors.white),
+            height: 220,
+            color: Colors.black,
+            child: const Icon(Icons.play_circle_outline, color: Colors.white, size: 80),
           ),
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(16),
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                const Text("Oleh: Maulana Isbad Rofiqi", style: TextStyle(color: Colors.grey)),
-                const SizedBox(height: 20),
-                const Text("Kurikulum Kursus", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                const Divider(),
-                _buildLessonTile("1. Pendahuluan & Instalasi", true),
-                _buildLessonTile("2. Struktur Folder & Main.dart", false),
-                _buildLessonTile("3. Membuat Widget Pertama", false),
-                _buildLessonTile("4. Navigasi Antar Halaman", false),
+                Text(title, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 10),
+                const Text("Kurikulum Mata Kuliah", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 15),
+                _buildLesson("1. Pendahuluan"),
+                _buildLesson("2. Dasar-dasar Teori"),
+                _buildLesson("3. Implementasi Projek"),
+                const SizedBox(height: 30),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF004684),
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(double.infinity, 50),
+                  ),
+                  onPressed: () {},
+                  child: const Text("MULAI BELAJAR"),
+                )
               ],
             ),
-          ),
+          )
         ],
-      ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ElevatedButton(
-          onPressed: () {},
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white),
-          child: const Text("MULAI BELAJAR SEKARANG"),
-        ),
       ),
     );
   }
 
-  Widget _buildLessonTile(String title, bool isCompleted) {
+  Widget _buildLesson(String name) {
     return ListTile(
-      leading: Icon(isCompleted ? Icons.check_circle : Icons.play_circle_outline, 
-                   color: isCompleted ? Colors.green : Colors.blue),
-      title: Text(title),
-      trailing: const Icon(Icons.lock_outline, size: 18),
-      onTap: () {}, // Tambahkan navigasi ke video player jika perlu
+      leading: const Icon(Icons.lock_open, color: Colors.blue),
+      title: Text(name),
+      trailing: const Icon(Icons.chevron_right),
     );
   }
 }

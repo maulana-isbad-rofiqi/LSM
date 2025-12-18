@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'home_screen.dart'; // Import halaman home yang akan dibuat nanti
+import 'home_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -8,28 +8,46 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(25.0),
+        padding: const EdgeInsets.symmetric(horizontal: 30),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.school, size: 80, color: Colors.blue),
+            const Icon(Icons.school_rounded, size: 100, color: Color(0xFF004684)),
             const SizedBox(height: 20),
-            const Text("LMS Learning", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+            const Text(
+              "CeLoe LMS",
+              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF004684)),
+            ),
             const SizedBox(height: 40),
-            const TextField(decoration: InputDecoration(labelText: "Email", border: OutlineInputBorder())),
-            const SizedBox(height: 15),
-            const TextField(obscureText: true, decoration: InputDecoration(labelText: "Password", border: OutlineInputBorder())),
+            TextField(
+              decoration: InputDecoration(
+                labelText: "NIM / Username",
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              obscureText: true,
+              decoration: InputDecoration(
+                labelText: "Password",
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
             const SizedBox(height: 30),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 50)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF004684),
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 55),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
               onPressed: () {
-                // NAVIGASI: Klik tombol ini untuk pindah ke Home
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => const HomeScreen()),
                 );
               },
-              child: const Text("LOGIN"),
+              child: const Text("MASUK", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             ),
           ],
         ),

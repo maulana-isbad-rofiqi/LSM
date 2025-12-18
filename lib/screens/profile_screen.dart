@@ -6,42 +6,39 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Profil")),
-      body: Center(
+      body: SingleChildScrollView( // SOLUSI OVERFLOW
         child: Column(
           children: [
-            const SizedBox(height: 40),
-            const CircleAvatar(
-              radius: 60,
-              backgroundColor: Colors.blue,
-              child: Icon(Icons.person, size: 80, color: Colors.white),
+            const SizedBox(height: 80),
+            const Center(
+              child: CircleAvatar(
+                radius: 65,
+                backgroundColor: Color(0xFF004684),
+                child: Icon(Icons.person, size: 80, color: Colors.white),
+              ),
             ),
             const SizedBox(height: 20),
             const Text("Maulana Isbad Rofiqi", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             const Text("maulana.isbad@mhs.ac.id", style: TextStyle(color: Colors.grey)),
-            const SizedBox(height: 30),
-            
-            // Menu-menu profil
-            _buildProfileMenu(Icons.settings, "Pengaturan Akun"),
-            _buildProfileMenu(Icons.workspace_premium, "Sertifikat Saya"),
-            _buildProfileMenu(Icons.help_outline, "Pusat Bantuan"),
-            const Spacer(),
-            
+            const SizedBox(height: 40),
+            _buildTile(Icons.settings, "Pengaturan Akun"),
+            _buildTile(Icons.workspace_premium, "Sertifikat Saya"),
+            _buildTile(Icons.help_outline, "Pusat Bantuan"),
+            const Divider(indent: 20, endIndent: 20),
             ListTile(
               leading: const Icon(Icons.logout, color: Colors.red),
-              title: const Text("Keluar", style: TextStyle(color: Colors.red)),
-              onTap: () => Navigator.pop(context),
+              title: const Text("Keluar", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+              onTap: () => Navigator.of(context).popUntil((route) => route.isFirst),
             ),
-            const SizedBox(height: 20),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildProfileMenu(IconData icon, String title) {
+  Widget _buildTile(IconData icon, String title) {
     return ListTile(
-      leading: Icon(icon),
+      leading: Icon(icon, color: const Color(0xFF004684)),
       title: Text(title),
       trailing: const Icon(Icons.chevron_right),
       onTap: () {},
