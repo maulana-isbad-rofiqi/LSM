@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:lms_app/screens/login_screen.dart';
+import 'screens/login_screen.dart';
+
+const Color primaryRed = Color(0xFFB84545);
 
 void main() {
   runApp(const LMSApp());
@@ -11,13 +13,23 @@ class LMSApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'CeLoe LMS',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // Menggunakan warna Biru Navy khas CeLoe
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF004684)),
-        useMaterial3: true,
-        scaffoldBackgroundColor: Colors.white,
+        primaryColor: primaryRed,
+        scaffoldBackgroundColor: const Color(0xFFF5F5F5),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: primaryRed,
+          foregroundColor: Colors.white,
+          elevation: 0,
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: primaryRed,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        ),
       ),
       home: const LoginScreen(),
     );

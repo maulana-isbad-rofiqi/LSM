@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'course_detail_screen.dart';
 
 class MyCoursesScreen extends StatelessWidget {
   const MyCoursesScreen({super.key});
@@ -6,34 +7,33 @@ class MyCoursesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Kursus Saya", style: TextStyle(fontWeight: FontWeight.bold))),
+      appBar: AppBar(title: const Text("Kelas Saya")),
       body: ListView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         children: [
-          _buildProgressCard("Flutter for Beginners", 0.7),
-          const SizedBox(height: 15),
-          _buildProgressCard("UI/UX Mobile Design", 0.3),
+          courseCard(context, "UI/UX Design", "Progress: 70%"),
+          courseCard(context, "Pemrograman Mobile", "Progress: 45%"),
+          courseCard(context, "Basis Data", "Progress: 90%"),
         ],
       ),
     );
   }
 
-  Widget _buildProgressCard(String title, double progress) {
+  Widget courseCard(BuildContext context, String title, String progress) {
     return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15), side: BorderSide(color: Colors.grey.shade200)),
-      child: Padding(
-        padding: const EdgeInsets.all(15),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 12),
-            LinearProgressIndicator(value: progress, backgroundColor: Colors.grey[200], color: const Color(0xFF004684), minHeight: 8),
-            const SizedBox(height: 8),
-            Text("${(progress * 100).toInt()}% Selesai", style: const TextStyle(color: Colors.grey)),
-          ],
-        ),
+      margin: const EdgeInsets.only(bottom: 12),
+      child: ListTile(
+        title: Text(title),
+        subtitle: Text(progress),
+        trailing: const Icon(Icons.arrow_forward_ios),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => CourseDetailScreen(title: title),
+            ),
+          );
+        },
       ),
     );
   }
