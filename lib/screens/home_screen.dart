@@ -49,6 +49,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           _buildHomeContent(),
           const MyCoursesScreen(),
           const NotificationScreen(),
+          const ProfileScreen(),
         ],
       ),
       bottomNavigationBar: _buildBottomNavBar(),
@@ -74,8 +75,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildNavItem(0, Icons.home_outlined, Icons.home_rounded, 'Home'),
-              _buildNavItem(1, Icons.library_books_outlined, Icons.library_books_rounded, 'Kelas Saya'),
+              _buildNavItem(1, Icons.library_books_outlined, Icons.library_books_rounded, 'Kelas'),
               _buildNavItem(2, Icons.notifications_outlined, Icons.notifications_rounded, 'Notifikasi'),
+              _buildNavItem(3, Icons.person_outlined, Icons.person_rounded, 'Profil'),
             ],
           ),
         ),
