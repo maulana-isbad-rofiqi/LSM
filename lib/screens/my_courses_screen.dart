@@ -160,16 +160,19 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> with TickerProviderSt
                   ),
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                  Icons.tune_rounded,
-                  color: Colors.white,
-                  size: 18,
+              GestureDetector(
+                onTap: () => _showFilterDialog(context),
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.tune_rounded,
+                    color: Colors.white,
+                    size: 18,
+                  ),
                 ),
               ),
             ],
@@ -680,6 +683,267 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> with TickerProviderSt
         },
         childCount: classes.length,
       ),
+    );
+  }
+
+  void _showFilterDialog(BuildContext context) {
+    String selectedSemester = "2023/2";
+    String selectedStatus = "Semua";
+    String selectedSKS = "Semua";
+    String selectedSort = "Nama A-Z";
+    
+    final List<String> semesters = ["2023/2", "2023/1", "2022/2", "2022/1"];
+    final List<String> statuses = ["Semua", "Aktif", "Selesai", "Belum Dimulai"];
+    final List<String> sksOptions = ["Semua", "1 SKS", "2 SKS", "3 SKS"];
+    final List<String> sortOptions = ["Nama A-Z", "Nama Z-A", "Progress Tertinggi", "Progress Terendah"];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => Container(
+          height: MediaQuery.of(context).size.height * 0.8,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          ),
+          child: Column(
+            children: [
+              // Handle Bar
+              Container(
+                margin: const EdgeInsets.only(top: 12),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              // Header
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: primaryRed.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.tune_rounded, color: primaryRed, size: 24),
+                    ),
+                    const SizedBox(width: 14),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Filter Kelas", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textMain)),
+                          Text("Atur tampilan daftar kelas", style: TextStyle(fontSize: 12, color: textMuted)),
+                        ],
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        setModalState(() {
+                          selectedSemester = "2023/2";
+                          selectedStatus = "Semua";
+                          selectedSKS = "Semua";
+                          selectedSort = "Nama A-Z";
+                        });
+                      },
+                      child: Text("Reset", style: TextStyle(color: primaryRed, fontWeight: FontWeight.w600)),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: Icon(Icons.close_rounded, color: textMuted),
+                    ),
+                  ],
+                ),
+              ),
+              Divider(height: 1, color: Colors.grey[200]),
+              // Filter Options
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Semester Filter
+                      _buildFilterSection(
+                        "Semester",
+                        Icons.calendar_month_rounded,
+                        Colors.blue,
+                        semesters,
+                        selectedSemester,
+                        (value) => setModalState(() => selectedSemester = value),
+                      ),
+                      const SizedBox(height: 24),
+                      // Status Filter
+                      _buildFilterSection(
+                        "Status Kelas",
+                        Icons.check_circle_rounded,
+                        Colors.green,
+                        statuses,
+                        selectedStatus,
+                        (value) => setModalState(() => selectedStatus = value),
+                      ),
+                      const SizedBox(height: 24),
+                      // SKS Filter
+                      _buildFilterSection(
+                        "Jumlah SKS",
+                        Icons.book_rounded,
+                        Colors.orange,
+                        sksOptions,
+                        selectedSKS,
+                        (value) => setModalState(() => selectedSKS = value),
+                      ),
+                      const SizedBox(height: 24),
+                      // Sort Filter
+                      _buildFilterSection(
+                        "Urutkan Berdasarkan",
+                        Icons.sort_rounded,
+                        Colors.purple,
+                        sortOptions,
+                        selectedSort,
+                        (value) => setModalState(() => selectedSort = value),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              // Apply Button
+              Container(
+                padding: EdgeInsets.fromLTRB(20, 16, 20, MediaQuery.of(context).padding.bottom + 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5)),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    // Active Filters Count
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: primaryRed.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.filter_list_rounded, color: primaryRed, size: 20),
+                          const SizedBox(width: 8),
+                          Text(
+                            "4 Filter",
+                            style: TextStyle(color: primaryRed, fontWeight: FontWeight.bold, fontSize: 14),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    // Apply Button
+                    Expanded(
+                      child: SizedBox(
+                        height: 54,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Row(
+                                  children: [
+                                    Icon(Icons.check_circle_rounded, color: Colors.white),
+                                    const SizedBox(width: 12),
+                                    const Text("Filter berhasil diterapkan!", style: TextStyle(fontWeight: FontWeight.w500)),
+                                  ],
+                                ),
+                                backgroundColor: primaryRed,
+                                behavior: SnackBarBehavior.floating,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                margin: const EdgeInsets.all(16),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primaryRed,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            elevation: 0,
+                          ),
+                          child: const Text("Terapkan Filter", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilterSection(String title, IconData icon, Color color, List<String> options, String selectedValue, Function(String) onChanged) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: color, size: 18),
+            ),
+            const SizedBox(width: 12),
+            Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: textMain)),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          children: options.map((option) {
+            final isSelected = option == selectedValue;
+            return GestureDetector(
+              onTap: () => onChanged(option),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                decoration: BoxDecoration(
+                  gradient: isSelected ? LinearGradient(colors: [color, color.withOpacity(0.8)]) : null,
+                  color: isSelected ? null : backgroundLight,
+                  borderRadius: BorderRadius.circular(12),
+                  border: isSelected ? null : Border.all(color: Colors.grey.withOpacity(0.2)),
+                  boxShadow: isSelected ? [
+                    BoxShadow(color: color.withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 2)),
+                  ] : null,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (isSelected) ...[
+                      Icon(Icons.check_rounded, color: Colors.white, size: 16),
+                      const SizedBox(width: 6),
+                    ],
+                    Text(
+                      option,
+                      style: TextStyle(
+                        color: isSelected ? Colors.white : textMuted,
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 }

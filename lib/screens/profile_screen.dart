@@ -35,7 +35,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 24),
                   _buildMenuSection(context, "Akun", [
                     _MenuItem(Icons.person_rounded, "Edit Profil", Colors.blue, () => _showEditProfileDialog(context)),
-                    _MenuItem(Icons.lock_rounded, "Ubah Password", Colors.orange, () {}),
+                    _MenuItem(Icons.lock_rounded, "Ubah Password", Colors.orange, () => _showChangePasswordDialog(context)),
                     _MenuItem(Icons.notifications_rounded, "Notifikasi", Colors.purple, () => _showNotificationSettingsDialog(context)),
                   ]),
                   const SizedBox(height: 20),
@@ -533,6 +533,292 @@ class _ProfileScreenState extends State<ProfileScreen> {
             value: value,
             onChanged: onChanged,
             activeColor: color,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showChangePasswordDialog(BuildContext context) {
+    final oldPasswordController = TextEditingController();
+    final newPasswordController = TextEditingController();
+    final confirmPasswordController = TextEditingController();
+    bool obscureOld = true;
+    bool obscureNew = true;
+    bool obscureConfirm = true;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => Container(
+          height: MediaQuery.of(context).size.height * 0.75,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          ),
+          child: Column(
+            children: [
+              // Handle Bar
+              Container(
+                margin: const EdgeInsets.only(top: 12),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              // Header
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.lock_rounded, color: Colors.orange, size: 24),
+                    ),
+                    const SizedBox(width: 14),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Ubah Password", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textMain)),
+                          Text("Ganti password akun Anda", style: TextStyle(fontSize: 12, color: textMuted)),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: Icon(Icons.close_rounded, color: textMuted),
+                    ),
+                  ],
+                ),
+              ),
+              Divider(height: 1, color: Colors.grey[200]),
+              // Form
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Info Card
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: Colors.orange.withOpacity(0.3)),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.info_rounded, color: Colors.orange, size: 24),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                "Password harus minimal 8 karakter dengan kombinasi huruf dan angka.",
+                                style: TextStyle(fontSize: 12, color: Colors.orange.shade800, height: 1.4),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      // Old Password
+                      _buildPasswordField(
+                        controller: oldPasswordController,
+                        label: "Password Lama",
+                        icon: Icons.lock_outline_rounded,
+                        obscure: obscureOld,
+                        onToggle: () => setModalState(() => obscureOld = !obscureOld),
+                      ),
+                      const SizedBox(height: 20),
+                      // New Password
+                      _buildPasswordField(
+                        controller: newPasswordController,
+                        label: "Password Baru",
+                        icon: Icons.lock_rounded,
+                        obscure: obscureNew,
+                        onToggle: () => setModalState(() => obscureNew = !obscureNew),
+                      ),
+                      const SizedBox(height: 20),
+                      // Confirm Password
+                      _buildPasswordField(
+                        controller: confirmPasswordController,
+                        label: "Konfirmasi Password Baru",
+                        icon: Icons.lock_clock_rounded,
+                        obscure: obscureConfirm,
+                        onToggle: () => setModalState(() => obscureConfirm = !obscureConfirm),
+                      ),
+                      const SizedBox(height: 24),
+                      // Password Strength Indicator
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: backgroundLight,
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text("Syarat Password:", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: textMain)),
+                            const SizedBox(height: 12),
+                            _buildPasswordRequirement("Minimal 8 karakter", true),
+                            _buildPasswordRequirement("Mengandung huruf besar", false),
+                            _buildPasswordRequirement("Mengandung huruf kecil", true),
+                            _buildPasswordRequirement("Mengandung angka", false),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              // Save Button
+              Container(
+                padding: EdgeInsets.fromLTRB(20, 16, 20, MediaQuery.of(context).padding.bottom + 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5)),
+                  ],
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 54,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Validate passwords
+                      if (oldPasswordController.text.isEmpty ||
+                          newPasswordController.text.isEmpty ||
+                          confirmPasswordController.text.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Row(
+                              children: [
+                                Icon(Icons.error_rounded, color: Colors.white),
+                                const SizedBox(width: 12),
+                                const Text("Harap isi semua field!", style: TextStyle(fontWeight: FontWeight.w500)),
+                              ],
+                            ),
+                            backgroundColor: Colors.red,
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            margin: const EdgeInsets.all(16),
+                          ),
+                        );
+                        return;
+                      }
+                      if (newPasswordController.text != confirmPasswordController.text) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Row(
+                              children: [
+                                Icon(Icons.error_rounded, color: Colors.white),
+                                const SizedBox(width: 12),
+                                const Text("Password baru tidak cocok!", style: TextStyle(fontWeight: FontWeight.w500)),
+                              ],
+                            ),
+                            backgroundColor: Colors.red,
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            margin: const EdgeInsets.all(16),
+                          ),
+                        );
+                        return;
+                      }
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Row(
+                            children: [
+                              Icon(Icons.check_circle_rounded, color: Colors.white),
+                              const SizedBox(width: 12),
+                              const Text("Password berhasil diubah!", style: TextStyle(fontWeight: FontWeight.w500)),
+                            ],
+                          ),
+                          backgroundColor: Colors.green,
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          margin: const EdgeInsets.all(16),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      elevation: 0,
+                    ),
+                    child: const Text("Ubah Password", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPasswordField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    required bool obscure,
+    required VoidCallback onToggle,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: backgroundLight,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: TextField(
+        controller: controller,
+        obscureText: obscure,
+        style: const TextStyle(fontSize: 15, color: textMain),
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(color: textMuted, fontSize: 14),
+          prefixIcon: Icon(icon, color: Colors.orange, size: 22),
+          suffixIcon: IconButton(
+            onPressed: onToggle,
+            icon: Icon(
+              obscure ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+              color: textMuted,
+              size: 22,
+            ),
+          ),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPasswordRequirement(String text, bool isMet) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          Icon(
+            isMet ? Icons.check_circle_rounded : Icons.circle_outlined,
+            color: isMet ? Colors.green : textMuted,
+            size: 18,
+          ),
+          const SizedBox(width: 10),
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 12,
+              color: isMet ? Colors.green : textMuted,
+              fontWeight: isMet ? FontWeight.w600 : FontWeight.normal,
+            ),
           ),
         ],
       ),
@@ -2245,13 +2531,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 "Profil Saya",
                 style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
+              GestureDetector(
+                onTap: () => _showEditProfileDialog(context),
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.edit_rounded, color: Colors.white, size: 18),
                 ),
-                child: const Icon(Icons.edit_rounded, color: Colors.white, size: 18),
               ),
             ],
           ),

@@ -180,13 +180,16 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
+              GestureDetector(
+                onTap: () => _showNotificationSettingsDialog(context),
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.settings_rounded, color: Colors.white, size: 18),
                 ),
-                child: const Icon(Icons.settings_rounded, color: Colors.white, size: 18),
               ),
             ],
           ),
@@ -494,5 +497,252 @@ class _NotificationScreenState extends State<NotificationScreen> {
         notification["isRead"] = true;
       }
     });
+  }
+
+  void _showNotificationSettingsDialog(BuildContext context) {
+    bool tugasNotif = true;
+    bool pengumumanNotif = true;
+    bool nilaiNotif = true;
+    bool reminderNotif = true;
+    bool soundNotif = true;
+    bool vibrationNotif = true;
+    bool emailNotif = false;
+    
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => Container(
+          height: MediaQuery.of(context).size.height * 0.8,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          ),
+          child: Column(
+            children: [
+              // Handle Bar
+              Container(
+                margin: const EdgeInsets.only(top: 12),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              // Header
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: primaryRed.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.settings_rounded, color: primaryRed, size: 24),
+                    ),
+                    const SizedBox(width: 14),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Pengaturan Notifikasi", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textMain)),
+                          Text("Atur preferensi notifikasi Anda", style: TextStyle(fontSize: 12, color: textMuted)),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: Icon(Icons.close_rounded, color: textMuted),
+                    ),
+                  ],
+                ),
+              ),
+              Divider(height: 1, color: Colors.grey[200]),
+              // Settings List
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Push Notification Section
+                      Row(
+                        children: [
+                          Icon(Icons.notifications_active_rounded, color: primaryRed, size: 20),
+                          const SizedBox(width: 8),
+                          const Text("Push Notification", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: textMain)),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      _buildNotifToggle(
+                        "Tugas Baru",
+                        "Notifikasi saat ada tugas baru",
+                        Icons.assignment_rounded,
+                        Colors.orange,
+                        tugasNotif,
+                        (val) => setModalState(() => tugasNotif = val),
+                      ),
+                      const SizedBox(height: 12),
+                      _buildNotifToggle(
+                        "Pengumuman",
+                        "Notifikasi pengumuman kampus",
+                        Icons.campaign_rounded,
+                        Colors.blue,
+                        pengumumanNotif,
+                        (val) => setModalState(() => pengumumanNotif = val),
+                      ),
+                      const SizedBox(height: 12),
+                      _buildNotifToggle(
+                        "Nilai",
+                        "Notifikasi saat nilai keluar",
+                        Icons.grade_rounded,
+                        Colors.green,
+                        nilaiNotif,
+                        (val) => setModalState(() => nilaiNotif = val),
+                      ),
+                      const SizedBox(height: 12),
+                      _buildNotifToggle(
+                        "Reminder Deadline",
+                        "Pengingat sebelum deadline tugas",
+                        Icons.alarm_rounded,
+                        Colors.red,
+                        reminderNotif,
+                        (val) => setModalState(() => reminderNotif = val),
+                      ),
+                      const SizedBox(height: 24),
+                      // Sound & Vibration Section
+                      Row(
+                        children: [
+                          Icon(Icons.volume_up_rounded, color: primaryRed, size: 20),
+                          const SizedBox(width: 8),
+                          const Text("Suara & Getaran", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: textMain)),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      _buildNotifToggle(
+                        "Suara Notifikasi",
+                        "Putar suara saat menerima notifikasi",
+                        Icons.notifications_rounded,
+                        Colors.purple,
+                        soundNotif,
+                        (val) => setModalState(() => soundNotif = val),
+                      ),
+                      const SizedBox(height: 12),
+                      _buildNotifToggle(
+                        "Getaran",
+                        "Getar saat menerima notifikasi",
+                        Icons.vibration_rounded,
+                        Colors.indigo,
+                        vibrationNotif,
+                        (val) => setModalState(() => vibrationNotif = val),
+                      ),
+                      const SizedBox(height: 24),
+                      // Email Section
+                      Row(
+                        children: [
+                          Icon(Icons.email_rounded, color: primaryRed, size: 20),
+                          const SizedBox(width: 8),
+                          const Text("Notifikasi Email", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: textMain)),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      _buildNotifToggle(
+                        "Email Notification",
+                        "Kirim notifikasi penting via email",
+                        Icons.mark_email_unread_rounded,
+                        Colors.teal,
+                        emailNotif,
+                        (val) => setModalState(() => emailNotif = val),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              // Save Button
+              Container(
+                padding: EdgeInsets.fromLTRB(20, 16, 20, MediaQuery.of(context).padding.bottom + 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5)),
+                  ],
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 54,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Row(
+                            children: [
+                              Icon(Icons.check_circle_rounded, color: Colors.white),
+                              const SizedBox(width: 12),
+                              const Text("Pengaturan notifikasi disimpan!", style: TextStyle(fontWeight: FontWeight.w500)),
+                            ],
+                          ),
+                          backgroundColor: primaryRed,
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          margin: const EdgeInsets.all(16),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryRed,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      elevation: 0,
+                    ),
+                    child: const Text("Simpan Pengaturan", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNotifToggle(String title, String subtitle, IconData icon, Color color, bool value, Function(bool) onChanged) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: backgroundLight,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: color, size: 22),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: textMain)),
+                Text(subtitle, style: TextStyle(fontSize: 11, color: textMuted)),
+              ],
+            ),
+          ),
+          Switch(
+            value: value,
+            onChanged: onChanged,
+            activeColor: color,
+          ),
+        ],
+      ),
+    );
   }
 }
