@@ -198,7 +198,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         // HELP
                         InkWell(
-                          onTap: () {},
+                          onTap: () => _showHelpDialog(context),
                           borderRadius: BorderRadius.circular(4),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -242,6 +242,189 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   const SizedBox(height: 80),
                 ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showHelpDialog(BuildContext context) {
+    final List<Map<String, dynamic>> faqItems = [
+      {
+        "question": "Bagaimana cara login ke aplikasi?",
+        "answer": "Masukkan email dan password yang telah terdaftar, lalu klik tombol 'Log In'.",
+      },
+      {
+        "question": "Lupa password?",
+        "answer": "Hubungi admin kampus atau bagian IT untuk melakukan reset password akun Anda.",
+      },
+      {
+        "question": "Bagaimana cara mendaftar akun baru?",
+        "answer": "Akun mahasiswa dibuat secara otomatis oleh sistem akademik. Hubungi bagian administrasi untuk informasi lebih lanjut.",
+      },
+      {
+        "question": "Tidak bisa login?",
+        "answer": "Pastikan email dan password sudah benar. Jika masih bermasalah, hubungi support di support@lms.ac.id",
+      },
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.7,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: Column(
+          children: [
+            // Handle Bar
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            // Header
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: primaryRed.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.help_rounded, color: primaryRed, size: 24),
+                  ),
+                  const SizedBox(width: 14),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Bantuan Login", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textMain)),
+                        Text("FAQ & Panduan Masuk", style: TextStyle(fontSize: 12, color: textMuted)),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: Icon(Icons.close_rounded, color: textMuted),
+                  ),
+                ],
+              ),
+            ),
+            // Contact Support Card
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [primaryRed, secondaryRed]),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(Icons.headset_mic_rounded, color: Colors.white, size: 24),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Butuh Bantuan?",
+                            style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            "support@lms.ac.id",
+                            style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            // FAQ List
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                itemCount: faqItems.length,
+                itemBuilder: (context, index) {
+                  final faq = faqItems[index];
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF9FAFB),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: Colors.grey.withOpacity(0.1)),
+                    ),
+                    child: Theme(
+                      data: ThemeData().copyWith(dividerColor: Colors.transparent),
+                      child: ExpansionTile(
+                        tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                        childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                        leading: Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: primaryRed.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Center(
+                            child: Text(
+                              "${index + 1}",
+                              style: const TextStyle(color: primaryRed, fontWeight: FontWeight.bold, fontSize: 14),
+                            ),
+                          ),
+                        ),
+                        title: Text(
+                          faq["question"],
+                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: textMain),
+                        ),
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: primaryRed.withOpacity(0.05),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(Icons.lightbulb_rounded, color: primaryRed, size: 18),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    faq["answer"],
+                                    style: TextStyle(fontSize: 12, color: textMuted, height: 1.5),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ],

@@ -41,12 +41,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 20),
                   _buildMenuSection(context, "Akademik", [
                     _MenuItem(Icons.school_rounded, "Riwayat Akademik", Colors.green, () => _showAcademicHistoryDialog(context)),
-                    _MenuItem(Icons.calendar_month_rounded, "Jadwal Kuliah", Colors.teal, () {}),
-                    _MenuItem(Icons.assignment_rounded, "Transkrip Nilai", Colors.indigo, () {}),
+                    _MenuItem(Icons.calendar_month_rounded, "Jadwal Kuliah", Colors.teal, () => _showScheduleDialog(context)),
+                    _MenuItem(Icons.assignment_rounded, "Transkrip Nilai", Colors.indigo, () => _showTranscriptDialog(context)),
                   ]),
                   const SizedBox(height: 20),
                   _buildMenuSection(context, "Lainnya", [
-                    _MenuItem(Icons.help_rounded, "Bantuan", Colors.cyan, () {}),
+                    _MenuItem(Icons.help_rounded, "Bantuan", Colors.cyan, () => _showHelpDialog(context)),
                     _MenuItem(Icons.info_rounded, "Tentang Aplikasi", Colors.grey, () => _showAboutAppDialog(context)),
                     _MenuItem(Icons.logout_rounded, "Keluar", Colors.red, () => _showLogoutDialog(context)),
                   ]),
@@ -822,6 +822,1374 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  void _showScheduleDialog(BuildContext context) {
+    final List<Map<String, dynamic>> scheduleData = [
+      {
+        "hari": "Senin",
+        "jadwal": [
+          {"waktu": "08:00 - 09:40", "matkul": "UI/UX Design", "ruang": "Lab A.101", "dosen": "Dr. Ahmad Fauzi, M.Kom"},
+          {"waktu": "10:00 - 11:40", "matkul": "Mobile Programming", "ruang": "Lab B.201", "dosen": "Prof. Siti Nurhaliza, Ph.D"},
+        ],
+      },
+      {
+        "hari": "Selasa",
+        "jadwal": [
+          {"waktu": "08:00 - 09:40", "matkul": "Machine Learning", "ruang": "Lab C.301", "dosen": "Dr. Budi Santoso, M.T"},
+          {"waktu": "13:00 - 14:40", "matkul": "Cloud Computing", "ruang": "R. 305", "dosen": "Dr. Rina Wulandari, M.Kom"},
+        ],
+      },
+      {
+        "hari": "Rabu",
+        "jadwal": [
+          {"waktu": "10:00 - 11:40", "matkul": "Sistem Terdistribusi", "ruang": "R. 202", "dosen": "Dr. Hendra Kusuma, M.Sc"},
+        ],
+      },
+      {
+        "hari": "Kamis",
+        "jadwal": [
+          {"waktu": "08:00 - 09:40", "matkul": "Keamanan Siber", "ruang": "Lab D.102", "dosen": "Dr. Dewi Sartika, M.Kom"},
+          {"waktu": "13:00 - 14:40", "matkul": "Skripsi", "ruang": "R. Dosen", "dosen": "Dr. Ahmad Fauzi, M.Kom"},
+        ],
+      },
+      {
+        "hari": "Jumat",
+        "jadwal": [
+          {"waktu": "08:00 - 10:30", "matkul": "Praktikum Mobile", "ruang": "Lab B.201", "dosen": "Asisten Lab"},
+        ],
+      },
+    ];
+
+    // Get today's day name in Indonesian
+    final List<String> dayNames = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+    final String today = dayNames[DateTime.now().weekday % 7];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.85,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: Column(
+          children: [
+            // Handle Bar
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            // Header
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.teal.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.calendar_month_rounded, color: Colors.teal, size: 24),
+                  ),
+                  const SizedBox(width: 14),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Jadwal Kuliah", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textMain)),
+                        Text("Semester 7 - 2025/2026 Ganjil", style: TextStyle(fontSize: 12, color: textMuted)),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: Icon(Icons.close_rounded, color: textMuted),
+                  ),
+                ],
+              ),
+            ),
+            // Today Info Card
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [Colors.teal, Colors.teal.shade700]),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.today_rounded, color: Colors.white, size: 28),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Hari Ini - $today",
+                            style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            _getTodayScheduleInfo(scheduleData, today),
+                            style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Divider(height: 1, color: Colors.grey[200]),
+            // Schedule List
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.all(20),
+                itemCount: scheduleData.length,
+                itemBuilder: (context, index) {
+                  final day = scheduleData[index];
+                  final isToday = day["hari"] == today;
+                  return _buildDayScheduleCard(day, isToday);
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _getTodayScheduleInfo(List<Map<String, dynamic>> data, String today) {
+    for (var day in data) {
+      if (day["hari"] == today) {
+        final jadwal = day["jadwal"] as List;
+        return "${jadwal.length} mata kuliah hari ini";
+      }
+    }
+    return "Tidak ada jadwal hari ini";
+  }
+
+  Widget _buildDayScheduleCard(Map<String, dynamic> day, bool isToday) {
+    final jadwal = day["jadwal"] as List;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: backgroundLight,
+        borderRadius: BorderRadius.circular(18),
+        border: isToday ? Border.all(color: Colors.teal, width: 2) : null,
+      ),
+      child: Theme(
+        data: ThemeData().copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          initiallyExpanded: isToday,
+          tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          leading: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: isToday ? Colors.teal.withOpacity(0.15) : Colors.grey.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              Icons.calendar_today_rounded,
+              color: isToday ? Colors.teal : Colors.grey,
+              size: 22,
+            ),
+          ),
+          title: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          day["hari"],
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: isToday ? Colors.teal : textMain,
+                          ),
+                        ),
+                        if (isToday) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: Colors.teal,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Text(
+                              "HARI INI",
+                              style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    Text(
+                      "${jadwal.length} mata kuliah",
+                      style: TextStyle(fontSize: 11, color: textMuted),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          children: [
+            ...jadwal.map((j) => _buildScheduleItem(j)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildScheduleItem(Map<String, dynamic> item) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 2)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.teal.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.access_time_rounded, color: Colors.teal, size: 14),
+                    const SizedBox(width: 4),
+                    Text(
+                      item["waktu"],
+                      style: const TextStyle(color: Colors.teal, fontSize: 11, fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.indigo.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.room_rounded, color: Colors.indigo, size: 14),
+                    const SizedBox(width: 4),
+                    Text(
+                      item["ruang"],
+                      style: const TextStyle(color: Colors.indigo, fontSize: 11, fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            item["matkul"],
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: textMain),
+          ),
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              Icon(Icons.person_rounded, color: textMuted, size: 14),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  item["dosen"],
+                  style: TextStyle(fontSize: 11, color: textMuted),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showTranscriptDialog(BuildContext context) {
+    final List<Map<String, dynamic>> transcriptData = [
+      {"kode": "IF101", "nama": "Pengantar Teknologi Informasi", "sks": 3, "nilai": "A", "bobot": 4.0},
+      {"kode": "IF102", "nama": "Algoritma & Pemrograman", "sks": 3, "nilai": "A", "bobot": 4.0},
+      {"kode": "IF103", "nama": "Kalkulus", "sks": 3, "nilai": "B+", "bobot": 3.5},
+      {"kode": "IF104", "nama": "Fisika Dasar", "sks": 2, "nilai": "A-", "bobot": 3.75},
+      {"kode": "IF201", "nama": "Struktur Data", "sks": 3, "nilai": "A", "bobot": 4.0},
+      {"kode": "IF202", "nama": "Basis Data", "sks": 3, "nilai": "A-", "bobot": 3.75},
+      {"kode": "IF203", "nama": "Sistem Operasi", "sks": 3, "nilai": "B+", "bobot": 3.5},
+      {"kode": "IF204", "nama": "Jaringan Komputer", "sks": 3, "nilai": "A", "bobot": 4.0},
+      {"kode": "IF301", "nama": "Pemrograman Web", "sks": 3, "nilai": "A", "bobot": 4.0},
+      {"kode": "IF302", "nama": "Pemrograman Berorientasi Objek", "sks": 3, "nilai": "A", "bobot": 4.0},
+      {"kode": "IF303", "nama": "Rekayasa Perangkat Lunak", "sks": 3, "nilai": "A-", "bobot": 3.75},
+      {"kode": "IF304", "nama": "Kecerdasan Buatan", "sks": 3, "nilai": "B+", "bobot": 3.5},
+      {"kode": "IF401", "nama": "UI/UX Design", "sks": 3, "nilai": "A", "bobot": 4.0},
+      {"kode": "IF402", "nama": "Mobile Programming", "sks": 3, "nilai": "A-", "bobot": 3.75},
+      {"kode": "IF403", "nama": "Machine Learning", "sks": 3, "nilai": "B+", "bobot": 3.5},
+      {"kode": "IF404", "nama": "Cloud Computing", "sks": 3, "nilai": "A", "bobot": 4.0},
+      {"kode": "IF405", "nama": "Sistem Terdistribusi", "sks": 3, "nilai": "A-", "bobot": 3.75},
+      {"kode": "IF406", "nama": "Keamanan Siber", "sks": 3, "nilai": "B+", "bobot": 3.5},
+    ];
+
+    // Calculate totals
+    int totalSKS = 0;
+    double totalBobot = 0;
+    int nilaiA = 0, nilaiB = 0, nilaiC = 0;
+
+    for (var mk in transcriptData) {
+      totalSKS += mk["sks"] as int;
+      totalBobot += (mk["sks"] as int) * (mk["bobot"] as double);
+      if (mk["nilai"].toString().startsWith("A")) nilaiA++;
+      else if (mk["nilai"].toString().startsWith("B")) nilaiB++;
+      else nilaiC++;
+    }
+
+    double ipk = totalBobot / totalSKS;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.9,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: Column(
+          children: [
+            // Handle Bar
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            // Header
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.indigo.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.assignment_rounded, color: Colors.indigo, size: 24),
+                  ),
+                  const SizedBox(width: 14),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Transkrip Nilai", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textMain)),
+                        Text("Rekap nilai seluruh mata kuliah", style: TextStyle(fontSize: 12, color: textMuted)),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: Icon(Icons.close_rounded, color: textMuted),
+                  ),
+                ],
+              ),
+            ),
+            // Summary Card
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [Colors.indigo, Colors.indigo.shade800]),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(color: Colors.indigo.withOpacity(0.3), blurRadius: 15, offset: const Offset(0, 8)),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _buildTranscriptSummary("IPK", ipk.toStringAsFixed(2), Icons.star_rounded),
+                        Container(width: 1, height: 50, color: Colors.white.withOpacity(0.2)),
+                        _buildTranscriptSummary("Total SKS", totalSKS.toString(), Icons.book_rounded),
+                        Container(width: 1, height: 50, color: Colors.white.withOpacity(0.2)),
+                        _buildTranscriptSummary("Mata Kuliah", transcriptData.length.toString(), Icons.school_rounded),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buildGradeCount("A", nilaiA, Colors.green),
+                          _buildGradeCount("B", nilaiB, Colors.blue),
+                          _buildGradeCount("C", nilaiC, Colors.orange),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Table Header
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.indigo.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    SizedBox(width: 30, child: Text("No", style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.indigo), textAlign: TextAlign.center)),
+                    const SizedBox(width: 8),
+                    SizedBox(width: 55, child: Text("Kode", style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.indigo))),
+                    const SizedBox(width: 8),
+                    Expanded(child: Text("Mata Kuliah", style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.indigo))),
+                    SizedBox(width: 35, child: Text("SKS", style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.indigo), textAlign: TextAlign.center)),
+                    const SizedBox(width: 8),
+                    SizedBox(width: 45, child: Text("Nilai", style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.indigo), textAlign: TextAlign.center)),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            // Transcript List
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                itemCount: transcriptData.length,
+                itemBuilder: (context, index) {
+                  final mk = transcriptData[index];
+                  return _buildTranscriptItem(mk, index);
+                },
+              ),
+            ),
+            // Download Button
+            Container(
+              padding: EdgeInsets.fromLTRB(20, 16, 20, MediaQuery.of(context).padding.bottom + 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5)),
+                ],
+              ),
+              child: SizedBox(
+                width: double.infinity,
+                height: 54,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Row(
+                          children: [
+                            Icon(Icons.download_rounded, color: Colors.white),
+                            const SizedBox(width: 12),
+                            const Text("Transkrip nilai sedang diunduh...", style: TextStyle(fontWeight: FontWeight.w500)),
+                          ],
+                        ),
+                        backgroundColor: Colors.indigo,
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        margin: const EdgeInsets.all(16),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.download_rounded, color: Colors.white),
+                  label: const Text("Unduh Transkrip PDF", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.indigo,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    elevation: 0,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTranscriptSummary(String label, String value, IconData icon) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(icon, color: Colors.white, size: 22),
+        ),
+        const SizedBox(height: 8),
+        Text(value, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+        Text(label, style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 10)),
+      ],
+    );
+  }
+
+  Widget _buildGradeCount(String grade, int count, Color color) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(grade, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+        ),
+        const SizedBox(width: 8),
+        Text("$count MK", style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500)),
+      ],
+    );
+  }
+
+  Widget _buildTranscriptItem(Map<String, dynamic> mk, int index) {
+    Color gradeColor;
+    String nilai = mk["nilai"];
+    if (nilai.startsWith("A")) {
+      gradeColor = Colors.green;
+    } else if (nilai.startsWith("B")) {
+      gradeColor = Colors.blue;
+    } else if (nilai.startsWith("C")) {
+      gradeColor = Colors.orange;
+    } else {
+      gradeColor = Colors.red;
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      decoration: BoxDecoration(
+        color: index.isEven ? backgroundLight : Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.grey.withOpacity(0.08)),
+      ),
+      child: Row(
+        children: [
+          // Nomor
+          Container(
+            width: 30,
+            height: 26,
+            decoration: BoxDecoration(
+              color: Colors.indigo.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Center(
+              child: Text(
+                "${index + 1}",
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.indigo),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          // Kode
+          SizedBox(
+            width: 55,
+            child: Text(
+              mk["kode"],
+              style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Colors.indigo.shade700),
+            ),
+          ),
+          const SizedBox(width: 8),
+          // Nama Mata Kuliah
+          Expanded(
+            child: Text(
+              mk["nama"],
+              style: const TextStyle(fontSize: 12, color: textMain, fontWeight: FontWeight.w500),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+          ),
+          // SKS
+          SizedBox(
+            width: 35,
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.grey.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                mk["sks"].toString(),
+                style: const TextStyle(fontSize: 11, color: textMain, fontWeight: FontWeight.w600),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          // Nilai
+          SizedBox(
+            width: 45,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+              decoration: BoxDecoration(
+                color: gradeColor.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: gradeColor.withOpacity(0.3), width: 1),
+              ),
+              child: Text(
+                nilai,
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: gradeColor),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showHelpDialog(BuildContext context) {
+    final List<Map<String, dynamic>> faqItems = [
+      {
+        "question": "Bagaimana cara melihat jadwal kuliah?",
+        "answer": "Buka menu Profil, lalu pilih 'Jadwal Kuliah' pada bagian Akademik. Anda dapat melihat jadwal perkuliahan per hari.",
+      },
+      {
+        "question": "Bagaimana cara mengunduh transkrip nilai?",
+        "answer": "Buka menu Profil, pilih 'Transkrip Nilai', lalu klik tombol 'Unduh Transkrip PDF' di bagian bawah.",
+      },
+      {
+        "question": "Bagaimana cara mengikuti kuis?",
+        "answer": "Pilih mata kuliah yang ingin diikuti kuisnya, lalu pilih kuis yang tersedia dan klik 'Mulai Kuis'.",
+      },
+      {
+        "question": "Bagaimana cara mengubah password?",
+        "answer": "Buka menu Profil, pilih 'Ubah Password' pada bagian Akun, lalu ikuti langkah-langkah yang ditampilkan.",
+      },
+      {
+        "question": "Bagaimana cara menghubungi dosen?",
+        "answer": "Buka halaman detail mata kuliah, di sana terdapat informasi kontak dosen pengampu.",
+      },
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.85,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: Column(
+          children: [
+            // Handle Bar
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            // Header
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.cyan.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.help_rounded, color: Colors.cyan, size: 24),
+                  ),
+                  const SizedBox(width: 14),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Pusat Bantuan", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textMain)),
+                        Text("FAQ & Panduan Penggunaan", style: TextStyle(fontSize: 12, color: textMuted)),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: Icon(Icons.close_rounded, color: textMuted),
+                  ),
+                ],
+              ),
+            ),
+            // Contact Support Card
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [Colors.cyan, Colors.cyan.shade700]),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.headset_mic_rounded, color: Colors.white, size: 28),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Butuh Bantuan Lebih?",
+                            style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            "Hubungi: support@lms.ac.id",
+                            style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Text(
+                        "Hubungi",
+                        style: TextStyle(color: Colors.cyan, fontSize: 12, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            // Section Title
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  Icon(Icons.quiz_rounded, color: Colors.cyan, size: 20),
+                  const SizedBox(width: 8),
+                  const Text(
+                    "Pertanyaan yang Sering Diajukan (FAQ)",
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: textMain),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            // FAQ List
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                itemCount: faqItems.length,
+                itemBuilder: (context, index) {
+                  final faq = faqItems[index];
+                  return _buildFaqItem(faq, index);
+                },
+              ),
+            ),
+            // Quick Actions
+            Container(
+              padding: EdgeInsets.fromLTRB(20, 16, 20, MediaQuery.of(context).padding.bottom + 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5)),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _showGuideDialog(context);
+                      },
+                      icon: const Icon(Icons.book_rounded, size: 18),
+                      label: const Text("Panduan", style: TextStyle(fontWeight: FontWeight.bold)),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.cyan,
+                        side: const BorderSide(color: Colors.cyan, width: 1.5),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _showLiveChatDialog(context);
+                      },
+                      icon: const Icon(Icons.chat_rounded, color: Colors.white, size: 18),
+                      label: const Text("Live Chat", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.cyan,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        elevation: 0,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showGuideDialog(BuildContext context) {
+    final List<Map<String, dynamic>> guideItems = [
+      {
+        "title": "Navigasi Aplikasi",
+        "icon": Icons.explore_rounded,
+        "color": Colors.blue,
+        "steps": [
+          "Gunakan menu navigasi di bagian bawah untuk berpindah halaman",
+          "Tab Home: Lihat dashboard dan ringkasan kursus",
+          "Tab Kelas Saya: Akses semua mata kuliah Anda",
+          "Tab Notifikasi: Lihat pemberitahuan terbaru",
+          "Tab Profil: Kelola akun dan pengaturan",
+        ],
+      },
+      {
+        "title": "Mengikuti Kuis",
+        "icon": Icons.quiz_rounded,
+        "color": Colors.orange,
+        "steps": [
+          "Pilih mata kuliah dari halaman Kelas Saya",
+          "Scroll ke bagian Kuis pada detail kursus",
+          "Pilih kuis yang ingin dikerjakan",
+          "Klik 'Mulai Kuis' untuk memulai",
+          "Jawab semua pertanyaan dan submit",
+        ],
+      },
+      {
+        "title": "Melihat Jadwal & Nilai",
+        "icon": Icons.calendar_month_rounded,
+        "color": Colors.teal,
+        "steps": [
+          "Buka halaman Profil",
+          "Pilih 'Jadwal Kuliah' untuk melihat jadwal",
+          "Pilih 'Transkrip Nilai' untuk melihat nilai",
+          "Gunakan 'Riwayat Akademik' untuk detail semester",
+        ],
+      },
+      {
+        "title": "Mengelola Akun",
+        "icon": Icons.person_rounded,
+        "color": Colors.purple,
+        "steps": [
+          "Buka halaman Profil",
+          "Pilih 'Edit Profil' untuk mengubah data diri",
+          "Pilih 'Ubah Password' untuk keamanan akun",
+          "Atur notifikasi sesuai preferensi Anda",
+        ],
+      },
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.85,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: Column(
+          children: [
+            // Handle Bar
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            // Header
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.indigo.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.menu_book_rounded, color: Colors.indigo, size: 24),
+                  ),
+                  const SizedBox(width: 14),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Panduan Penggunaan", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textMain)),
+                        Text("Cara menggunakan aplikasi LMS", style: TextStyle(fontSize: 12, color: textMuted)),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: Icon(Icons.close_rounded, color: textMuted),
+                  ),
+                ],
+              ),
+            ),
+            Divider(height: 1, color: Colors.grey[200]),
+            // Guide List
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.all(20),
+                itemCount: guideItems.length,
+                itemBuilder: (context, index) {
+                  final guide = guideItems[index];
+                  return _buildGuideCard(guide);
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGuideCard(Map<String, dynamic> guide) {
+    final steps = guide["steps"] as List<String>;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: backgroundLight,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.withOpacity(0.1)),
+      ),
+      child: Theme(
+        data: ThemeData().copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          initiallyExpanded: false,
+          tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          leading: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: (guide["color"] as Color).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(guide["icon"], color: guide["color"], size: 24),
+          ),
+          title: Text(
+            guide["title"],
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: textMain),
+          ),
+          children: [
+            ...steps.asMap().entries.map((entry) => Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      color: (guide["color"] as Color).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "${entry.key + 1}",
+                        style: TextStyle(color: guide["color"], fontWeight: FontWeight.bold, fontSize: 12),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      entry.value,
+                      style: TextStyle(fontSize: 13, color: textMuted, height: 1.4),
+                    ),
+                  ),
+                ],
+              ),
+            )),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showLiveChatDialog(BuildContext context) {
+    final TextEditingController messageController = TextEditingController();
+    final List<Map<String, dynamic>> chatMessages = [
+      {"isBot": true, "message": "Halo! 👋 Selamat datang di Live Chat LMS. Saya adalah asisten virtual yang siap membantu Anda.", "time": "Baru saja"},
+      {"isBot": true, "message": "Silakan ketik pertanyaan Anda, dan saya akan berusaha membantu sebaik mungkin.", "time": "Baru saja"},
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => Container(
+          height: MediaQuery.of(context).size.height * 0.85,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          ),
+          child: Column(
+            children: [
+              // Handle Bar
+              Container(
+                margin: const EdgeInsets.only(top: 12),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              // Header
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [Colors.cyan, Colors.cyan.shade700]),
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.support_agent_rounded, color: Colors.white, size: 28),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text("Live Chat Support", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+                          Row(
+                            children: [
+                              Container(
+                                width: 8,
+                                height: 8,
+                                decoration: const BoxDecoration(
+                                  color: Colors.greenAccent,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Text("Online", style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.9))),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.close_rounded, color: Colors.white),
+                    ),
+                  ],
+                ),
+              ),
+              // Chat Messages
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: chatMessages.length,
+                  itemBuilder: (context, index) {
+                    final msg = chatMessages[index];
+                    return _buildChatBubble(msg["isBot"], msg["message"], msg["time"]);
+                  },
+                ),
+              ),
+              // Quick Replies
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    _buildQuickReply("Lupa Password", () {
+                      setModalState(() {
+                        chatMessages.add({"isBot": false, "message": "Lupa Password", "time": "Baru saja"});
+                        chatMessages.add({"isBot": true, "message": "Untuk reset password, silakan hubungi bagian IT kampus atau kirim email ke support@lms.ac.id dengan menyertakan NIM dan email terdaftar Anda.", "time": "Baru saja"});
+                      });
+                    }),
+                    _buildQuickReply("Akses Kelas", () {
+                      setModalState(() {
+                        chatMessages.add({"isBot": false, "message": "Akses Kelas", "time": "Baru saja"});
+                        chatMessages.add({"isBot": true, "message": "Pastikan Anda sudah terdaftar di kelas tersebut. Jika belum muncul, hubungi dosen pengampu atau bagian akademik.", "time": "Baru saja"});
+                      });
+                    }),
+                    _buildQuickReply("Error Aplikasi", () {
+                      setModalState(() {
+                        chatMessages.add({"isBot": false, "message": "Error Aplikasi", "time": "Baru saja"});
+                        chatMessages.add({"isBot": true, "message": "Coba refresh halaman atau logout lalu login kembali. Jika masalah berlanjut, screenshot error dan kirim ke support@lms.ac.id", "time": "Baru saja"});
+                      });
+                    }),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              // Input Field
+              Container(
+                padding: EdgeInsets.fromLTRB(16, 12, 16, MediaQuery.of(context).padding.bottom + 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5)),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: backgroundLight,
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(color: Colors.grey.withOpacity(0.2)),
+                        ),
+                        child: TextField(
+                          controller: messageController,
+                          decoration: const InputDecoration(
+                            hintText: "Ketik pesan...",
+                            hintStyle: TextStyle(color: textMuted, fontSize: 14),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(vertical: 12),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(colors: [Colors.cyan, Colors.cyan.shade700]),
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: IconButton(
+                        onPressed: () {
+                          if (messageController.text.isNotEmpty) {
+                            setModalState(() {
+                              chatMessages.add({"isBot": false, "message": messageController.text, "time": "Baru saja"});
+                              chatMessages.add({"isBot": true, "message": "Terima kasih atas pertanyaan Anda! Tim support kami akan segera merespons. Untuk respon lebih cepat, silakan email ke support@lms.ac.id", "time": "Baru saja"});
+                              messageController.clear();
+                            });
+                          }
+                        },
+                        icon: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildChatBubble(bool isBot, String message, String time) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        mainAxisAlignment: isBot ? MainAxisAlignment.start : MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (isBot) ...[
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(colors: [Colors.cyan, Colors.cyan.shade700]),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(Icons.support_agent_rounded, color: Colors.white, size: 18),
+            ),
+            const SizedBox(width: 10),
+          ],
+          Flexible(
+            child: Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: isBot ? backgroundLight : Colors.cyan,
+                borderRadius: BorderRadius.only(
+                  topLeft: const Radius.circular(16),
+                  topRight: const Radius.circular(16),
+                  bottomLeft: Radius.circular(isBot ? 4 : 16),
+                  bottomRight: Radius.circular(isBot ? 16 : 4),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    message,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: isBot ? textMain : Colors.white,
+                      height: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    time,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: isBot ? textMuted : Colors.white.withOpacity(0.7),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (!isBot) const SizedBox(width: 42),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickReply(String text, VoidCallback onTap) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.cyan.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.cyan.withOpacity(0.3)),
+          ),
+          child: Text(
+            text,
+            style: const TextStyle(color: Colors.cyan, fontSize: 12, fontWeight: FontWeight.w600),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFaqItem(Map<String, dynamic> faq, int index) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: backgroundLight,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.grey.withOpacity(0.1)),
+      ),
+      child: Theme(
+        data: ThemeData().copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          leading: Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: Colors.cyan.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Center(
+              child: Text(
+                "${index + 1}",
+                style: const TextStyle(color: Colors.cyan, fontWeight: FontWeight.bold, fontSize: 14),
+              ),
+            ),
+          ),
+          title: Text(
+            faq["question"],
+            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: textMain),
+          ),
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.cyan.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.lightbulb_rounded, color: Colors.cyan, size: 18),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      faq["answer"],
+                      style: TextStyle(fontSize: 12, color: textMuted, height: 1.5),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
