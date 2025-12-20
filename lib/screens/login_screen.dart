@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
 
-const Color primaryRed = Color(0xFFB91C1C);
-const Color secondaryRed = Color(0xFF991B1B);
+const Color primaryRed = Color(0xFFDC2626);
+const Color secondaryRed = Color(0xFFB91C1C);
+const Color darkRed = Color(0xFF991B1B);
 const Color backgroundLight = Color(0xFFFFFFFF);
 const Color textMain = Color(0xFF1F2937);
 const Color textMuted = Color(0xFF6B7280);
@@ -15,417 +16,325 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  bool obscure = true;
+  bool _isLogin = true;
+  bool _obscurePassword = true;
+  bool _obscureConfirm = true;
+  bool _isLoading = false;
+  
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _nameController = TextEditingController();
+  final _npmController = TextEditingController();
+  final _confirmController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _nameController.dispose();
+    _npmController.dispose();
+    _confirmController.dispose();
+    super.dispose();
+  }
+
+  void _handleSubmit() async {
+    setState(() => _isLoading = true);
+    await Future.delayed(const Duration(milliseconds: 1500));
+    if (mounted) {
+      if (_isLogin) {
+        Navigator.pushReplacement(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (_, __, ___) => const HomeScreen(),
+            transitionsBuilder: (_, anim, __, child) => FadeTransition(opacity: anim, child: child),
+            transitionDuration: const Duration(milliseconds: 400),
+          ),
+        );
+      } else {
+        setState(() {
+          _isLoading = false;
+          _isLogin = true;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.white),
+                SizedBox(width: 10),
+                Text("Akun berhasil dibuat!", style: TextStyle(fontWeight: FontWeight.w500)),
+              ],
+            ),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    
     return Scaffold(
       backgroundColor: backgroundLight,
-      body: SizedBox(
-        height: MediaQuery.of(context).size.height,
-        child: Stack(
+      body: SingleChildScrollView(
+        child: Column(
           children: [
-            // ================= BOTTOM WAVE =================
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: 120,
-              child: CustomPaint(
-                painter: BottomWavePainter(),
-              ),
-            ),
-
-            // ================= SCROLLABLE CONTENT =================
-            SingleChildScrollView(
-              child: Column(
+            // ================= HEADER DENGAN BACKGROUND IMAGE =================
+            SizedBox(
+              height: screenHeight * 0.40,
+              child: Stack(
+                clipBehavior: Clip.none,
                 children: [
-                  // ================= HEADER =================
-                  // ================= HEADER =================
-                  Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      // Background Image Container
-                      Container(
-                        height: 280, // Matches the stack height logically now
-                        width: double.infinity,
+                  // Background Image with Curved Bottom
+                  Positioned.fill(
+                    child: ClipPath(
+                      clipper: CurvedBottomClipper(),
+                      child: Container(
                         decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.vertical(
-                            bottom: Radius.circular(40),
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black26,
-                              blurRadius: 10,
-                              offset: Offset(0, 4),
-                            ),
-                          ],
                           image: DecorationImage(
                             image: AssetImage("assets/images/bg_login.jpg"),
                             fit: BoxFit.cover,
-                            colorFilter: ColorFilter.mode(
-                              Colors.black26,
-                              BlendMode.darken,
-                            ),
                           ),
                         ),
                         child: Container(
-                          decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.vertical(
-                              bottom: Radius.circular(40),
-                            ),
-                            gradient: LinearGradient(
-                              begin: Alignment.bottomCenter,
-                              end: Alignment.topCenter,
-                              colors: [
-                                Colors.black12,
-                                Colors.transparent,
-                                Colors.black12,
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      // ================= LOGO (ASSET) =================
-                      Positioned(
-                        top: 232, // Centered on the curve (280 - 48)
-                        left: 0,
-                        right: 0,
-                        child: Center(
-                          child: Container(
-                            width: 96,
-                            height: 96,
-                            padding: const EdgeInsets.all(4), // Thinner border
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: primaryRed.withOpacity(0.25),
-                                  blurRadius: 25,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                color: Colors.white, // Clean white background for logo
-                                shape: BoxShape.circle,
-                              ),
-                              child: Center(
-                                child: Image.asset(
-                                  "assets/images/logo.png",
-                                  width: 56, // Slightly larger logo
-                                  height: 56,
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  // Space for the protruding logo (48px) + extra padding
-                  const SizedBox(height: 60),
-
-                  // ================= FORM =================
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        // EMAIL
-                        _buildMaterialInput(
-                          label: "Email",
-                        ),
-
-                        const SizedBox(height: 32),
-
-                        // PASSWORD
-                        _buildMaterialInput(
-                          label: "Password",
-                          isPassword: true,
-                          obscure: obscure,
-                          onToggleVisibility: () =>
-                              setState(() => obscure = !obscure),
-                        ),
-
-                        const SizedBox(height: 48),
-
-                        // LOGIN BUTTON
-                        SizedBox(
-                          width: double.infinity,
-                          height: 56,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: primaryRed,
-                              foregroundColor: Colors.white,
-                              elevation: 8,
-                              shadowColor: primaryRed.withOpacity(0.4),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(999),
-                              ),
-                            ).copyWith(
-                              overlayColor:
-                                  MaterialStateProperty.resolveWith(
-                                (states) =>
-                                    secondaryRed.withOpacity(0.1),
-                              ),
-                            ),
-                            onPressed: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const HomeScreen(),
-                                ),
-                              );
-                            },
-                            child: const Text(
-                              "Log In",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        // HELP
-                        InkWell(
-                          onTap: () => _showHelpDialog(context),
-                          borderRadius: BorderRadius.circular(4),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Text(
-                                  "Bantuan",
-                                  style: TextStyle(
-                                    color: textMuted,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                                const SizedBox(width: 6),
-                                Container(
-                                  width: 16,
-                                  height: 16,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[200],
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Center(
-                                    child: Text(
-                                      "?",
-                                      style: TextStyle(
-                                        color: Color(0xFF4B5563),
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 80),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showHelpDialog(BuildContext context) {
-    final List<Map<String, dynamic>> faqItems = [
-      {
-        "question": "Bagaimana cara login ke aplikasi?",
-        "answer": "Masukkan email dan password yang telah terdaftar, lalu klik tombol 'Log In'.",
-      },
-      {
-        "question": "Lupa password?",
-        "answer": "Hubungi admin kampus atau bagian IT untuk melakukan reset password akun Anda.",
-      },
-      {
-        "question": "Bagaimana cara mendaftar akun baru?",
-        "answer": "Akun mahasiswa dibuat secara otomatis oleh sistem akademik. Hubungi bagian administrasi untuk informasi lebih lanjut.",
-      },
-      {
-        "question": "Tidak bisa login?",
-        "answer": "Pastikan email dan password sudah benar. Jika masih bermasalah, hubungi support di support@lms.ac.id",
-      },
-    ];
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.7,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-        ),
-        child: Column(
-          children: [
-            // Handle Bar
-            Container(
-              margin: const EdgeInsets.only(top: 12),
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            // Header
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: primaryRed.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(Icons.help_rounded, color: primaryRed, size: 24),
-                  ),
-                  const SizedBox(width: 14),
-                  const Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Bantuan Login", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textMain)),
-                        Text("FAQ & Panduan Masuk", style: TextStyle(fontSize: 12, color: textMuted)),
-                      ],
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: Icon(Icons.close_rounded, color: textMuted),
-                  ),
-                ],
-              ),
-            ),
-            // Contact Support Card
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [primaryRed, secondaryRed]),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Icon(Icons.headset_mic_rounded, color: Colors.white, size: 24),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "Butuh Bantuan?",
-                            style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            "support@lms.ac.id",
-                            style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 12),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            // FAQ List
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                itemCount: faqItems.length,
-                itemBuilder: (context, index) {
-                  final faq = faqItems[index];
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 10),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF9FAFB),
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: Colors.grey.withOpacity(0.1)),
-                    ),
-                    child: Theme(
-                      data: ThemeData().copyWith(dividerColor: Colors.transparent),
-                      child: ExpansionTile(
-                        tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                        childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                        leading: Container(
-                          width: 32,
-                          height: 32,
                           decoration: BoxDecoration(
-                            color: primaryRed.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Colors.black.withOpacity(0.1),
+                                primaryRed.withOpacity(0.15),
+                                Colors.black.withOpacity(0.25),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  
+                  // Decorative Circles
+                  Positioned(
+                    top: -30,
+                    right: -30,
+                    child: Container(
+                      width: 120,
+                      height: 120,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withOpacity(0.08),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 60,
+                    left: -20,
+                    child: Container(
+                      width: 70,
+                      height: 70,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withOpacity(0.06),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 80,
+                    right: 30,
+                    child: Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withOpacity(0.08),
+                      ),
+                    ),
+                  ),
+                  
+                  // Logo Circle with Glow
+                  Positioned(
+                    bottom: -48,
+                    left: 0,
+                    right: 0,
+                    child: Center(
+                      child: Container(
+                        width: 96,
+                        height: 96,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [primaryRed, darkRed],
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: primaryRed.withOpacity(0.5),
+                              blurRadius: 25,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        padding: const EdgeInsets.all(4),
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white,
                           ),
                           child: Center(
-                            child: Text(
-                              "${index + 1}",
-                              style: const TextStyle(color: primaryRed, fontWeight: FontWeight.bold, fontSize: 14),
+                            child: Image.asset(
+                              "assets/images/logo.png",
+                              width: 52,
+                              height: 52,
+                              fit: BoxFit.contain,
                             ),
                           ),
                         ),
-                        title: Text(
-                          faq["question"],
-                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: textMain),
-                        ),
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: primaryRed.withOpacity(0.05),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Icon(Icons.lightbulb_rounded, color: primaryRed, size: 18),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: Text(
-                                    faq["answer"],
-                                    style: TextStyle(fontSize: 12, color: textMuted, height: 1.5),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
                       ),
                     ),
-                  );
-                },
+                  ),
+                ],
               ),
+            ),
+            
+            // Space for overlapping logo
+            const SizedBox(height: 58),
+            
+            // ================= FORM SECTION =================
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 28),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Tab Switcher
+                  Container(
+                    height: 48,
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF3F4F6),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        _buildTab("Masuk", Icons.login_rounded, _isLogin, () => setState(() => _isLogin = true)),
+                        _buildTab("Daftar", Icons.person_add_rounded, !_isLogin, () => setState(() => _isLogin = false)),
+                      ],
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 28),
+                  
+                  // Form Title
+                  Text(
+                    _isLogin ? "Login" : "Daftar Akun",
+                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: textMain),
+                  ),
+                  const SizedBox(height: 24),
+                  
+                  // Form Fields
+                  if (_isLogin) ...[
+                    // LOGIN FORM
+                    _buildTextField(
+                      controller: _emailController,
+                      label: "Email / NPM",
+                    ),
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                      controller: _passwordController,
+                      label: "Password",
+                      isPassword: true,
+                      obscure: _obscurePassword,
+                      onToggle: () => setState(() => _obscurePassword = !_obscurePassword),
+                    ),
+                    const SizedBox(height: 8),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: () {},
+                        style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                        child: const Text("Lupa Password?", style: TextStyle(color: primaryRed, fontSize: 13)),
+                      ),
+                    ),
+                  ] else ...[
+                    // REGISTER FORM
+                    _buildTextField(controller: _nameController, label: "Nama Lengkap"),
+                    const SizedBox(height: 16),
+                    _buildTextField(controller: _npmController, label: "NPM"),
+                    const SizedBox(height: 16),
+                    _buildTextField(controller: _emailController, label: "Email"),
+                    const SizedBox(height: 16),
+                    _buildTextField(
+                      controller: _passwordController,
+                      label: "Password",
+                      isPassword: true,
+                      obscure: _obscurePassword,
+                      onToggle: () => setState(() => _obscurePassword = !_obscurePassword),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildTextField(
+                      controller: _confirmController,
+                      label: "Konfirmasi Password",
+                      isPassword: true,
+                      obscure: _obscureConfirm,
+                      onToggle: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                    ),
+                  ],
+                  
+                  const SizedBox(height: 28),
+                  
+                  // Submit Button
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _handleSubmit,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primaryRed,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(26),
+                        ),
+                      ),
+                      child: _isLoading
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
+                            )
+                          : Text(
+                              _isLogin ? "Masuk" : "Buat Akun",
+                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                            ),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 20),
+                  
+                  // Help Link
+                  Center(
+                    child: TextButton(
+                      onPressed: () => _showHelpDialog(context),
+                      child: const Text(
+                        "Bantuan ?",
+                        style: TextStyle(color: primaryRed, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            const SizedBox(height: 20),
+            
+            // ================= BOTTOM WAVE =================
+            SizedBox(
+              height: 100,
+              width: double.infinity,
+              child: CustomPaint(painter: WavePainter()),
             ),
           ],
         ),
@@ -433,100 +342,192 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildMaterialInput({
+  Widget _buildTab(String title, IconData icon, bool isActive, VoidCallback onTap) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          decoration: BoxDecoration(
+            color: isActive ? Colors.white : Colors.transparent,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: isActive ? [
+              BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 5, offset: const Offset(0, 2)),
+            ] : null,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 18, color: isActive ? primaryRed : textMuted),
+              const SizedBox(width: 6),
+              Text(
+                title,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                  color: isActive ? primaryRed : textMuted,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
     required String label,
     bool isPassword = false,
     bool obscure = false,
-    VoidCallback? onToggleVisibility,
+    VoidCallback? onToggle,
   }) {
     return TextFormField(
-      style: const TextStyle(fontSize: 16, color: textMain),
+      controller: controller,
       obscureText: isPassword ? obscure : false,
+      style: const TextStyle(fontSize: 15, color: textMain),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(color: textMuted),
+        labelStyle: const TextStyle(color: textMuted, fontSize: 14),
         floatingLabelStyle: const TextStyle(color: primaryRed),
-        contentPadding: const EdgeInsets.symmetric(vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(vertical: 14),
         enabledBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Color(0xFFD1D5DB), width: 1.5),
+          borderSide: BorderSide(color: Color(0xFFE5E7EB), width: 1),
         ),
         focusedBorder: const UnderlineInputBorder(
           borderSide: BorderSide(color: primaryRed, width: 2),
         ),
         suffixIcon: isPassword
             ? IconButton(
+                onPressed: onToggle,
                 icon: Icon(
-                  obscure
-                      ? Icons.visibility_outlined
-                      : Icons.visibility_off_outlined,
-                  color: Colors.grey[400],
+                  obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                  color: textMuted,
+                  size: 22,
                 ),
-                onPressed: onToggleVisibility,
               )
             : null,
       ),
     );
   }
+
+  void _showHelpDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.5,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(10)),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(color: primaryRed.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                    child: const Icon(Icons.help_rounded, color: primaryRed, size: 22),
+                  ),
+                  const SizedBox(width: 12),
+                  const Text("Bantuan Login", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textMain)),
+                  const Spacer(),
+                  IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close, color: textMuted)),
+                ],
+              ),
+            ),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                children: [
+                  _buildHelpItem("Cara Login", "Masukkan Email atau NPM dan password Anda."),
+                  _buildHelpItem("Cara Daftar", "Klik tab 'Daftar', isi nama, NPM, email, dan password."),
+                  _buildHelpItem("Lupa Password", "Hubungi admin kampus untuk reset password."),
+                  _buildHelpItem("Kontak", "Email: support@lms.ac.id"),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHelpItem(String title, String desc) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(color: const Color(0xFFF9FAFB), borderRadius: BorderRadius.circular(12)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: textMain)),
+          const SizedBox(height: 4),
+          Text(desc, style: const TextStyle(fontSize: 13, color: textMuted)),
+        ],
+      ),
+    );
+  }
 }
 
-class BottomWavePainter extends CustomPainter {
+class WavePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final double scaleX = size.width / 1440;
-    final double scaleY = size.height / 320;
-
-    Path path = Path()
-      ..moveTo(0, 224 * scaleY)
-      ..lineTo(48 * scaleX, 213.3 * scaleY)
-      ..cubicTo(
-        96 * scaleX,
-        203 * scaleY,
-        192 * scaleX,
-        181 * scaleY,
-        288 * scaleX,
-        181.3 * scaleY,
-      )
-      ..cubicTo(
-        384 * scaleX,
-        181 * scaleY,
-        480 * scaleX,
-        203 * scaleY,
-        576 * scaleX,
-        213.3 * scaleY,
-      )
-      ..cubicTo(
-        672 * scaleX,
-        224 * scaleY,
-        768 * scaleX,
-        224 * scaleY,
-        864 * scaleX,
-        202.7 * scaleY,
-      )
-      ..cubicTo(
-        960 * scaleX,
-        181 * scaleY,
-        1056 * scaleX,
-        139 * scaleY,
-        1152 * scaleX,
-        133.3 * scaleY,
-      )
-      ..cubicTo(
-        1248 * scaleX,
-        128 * scaleY,
-        1344 * scaleX,
-        160 * scaleY,
-        1392 * scaleX,
-        176 * scaleY,
-      )
-      ..lineTo(1440 * scaleX, 192 * scaleY)
-      ..lineTo(1440 * scaleX, 320 * scaleY)
-      ..lineTo(0, 320 * scaleY)
-      ..close();
-
-    Paint paint = Paint()..color = primaryRed;
+    final paint = Paint()..color = primaryRed;
+    
+    final path = Path();
+    path.moveTo(0, size.height * 0.6);
+    path.quadraticBezierTo(size.width * 0.25, size.height * 0.25, size.width * 0.5, size.height * 0.45);
+    path.quadraticBezierTo(size.width * 0.75, size.height * 0.65, size.width, size.height * 0.35);
+    path.lineTo(size.width, size.height);
+    path.lineTo(0, size.height);
+    path.close();
+    
     canvas.drawPath(path, paint);
+    
+    // Second wave
+    final paint2 = Paint()..color = secondaryRed.withOpacity(0.7);
+    final path2 = Path();
+    path2.moveTo(0, size.height * 0.75);
+    path2.quadraticBezierTo(size.width * 0.35, size.height * 0.45, size.width * 0.6, size.height * 0.65);
+    path2.quadraticBezierTo(size.width * 0.85, size.height * 0.8, size.width, size.height * 0.55);
+    path2.lineTo(size.width, size.height);
+    path2.lineTo(0, size.height);
+    path2.close();
+    
+    canvas.drawPath(path2, paint2);
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class CurvedBottomClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    path.lineTo(0, size.height - 40);
+    path.quadraticBezierTo(
+      size.width / 2,
+      size.height + 20,
+      size.width,
+      size.height - 40,
+    );
+    path.lineTo(size.width, 0);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }
