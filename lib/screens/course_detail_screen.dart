@@ -20,6 +20,7 @@ class CourseDetailScreen extends StatefulWidget {
 
 class _CourseDetailScreenState extends State<CourseDetailScreen> with TickerProviderStateMixin {
   int _selectedTab = 0;
+  bool _isBookmarked = false;
   late TabController _tabController;
 
   final List<Map<String, dynamic>> _materials = [
@@ -135,22 +136,46 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> with TickerProv
                 ),
               ),
               const Spacer(),
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
+              GestureDetector(
+                onTap: () {
+                  setState(() => _isBookmarked = !_isBookmarked);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Row(
+                        children: [
+                          Icon(_isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_remove_rounded, color: Colors.white),
+                          const SizedBox(width: 12),
+                          Text(_isBookmarked ? "Kursus disimpan ke bookmark" : "Bookmark dihapus", style: const TextStyle(fontWeight: FontWeight.w500)),
+                        ],
+                      ),
+                      backgroundColor: _isBookmarked ? Colors.green : Colors.orange,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      margin: const EdgeInsets.all(16),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(_isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded, color: Colors.white, size: 18),
                 ),
-                child: const Icon(Icons.bookmark_border_rounded, color: Colors.white, size: 18),
               ),
               const SizedBox(width: 10),
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
+              GestureDetector(
+                onTap: () => _showMoreMenu(context),
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.more_vert_rounded, color: Colors.white, size: 18),
                 ),
-                child: const Icon(Icons.more_vert_rounded, color: Colors.white, size: 18),
               ),
             ],
           ),
@@ -458,6 +483,10 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> with TickerProv
               onTap: () {
                 if (type == "quiz") {
                   Navigator.push(context, MaterialPageRoute(builder: (_) => const QuizScreen()));
+                } else if (type == "video") {
+                  _showVideoPlayer(context, item["title"] as String);
+                } else if (type == "assignment") {
+                  _showAssignmentInfo(context, item["title"] as String);
                 }
               },
               child: Container(
@@ -602,7 +631,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> with TickerProv
                 borderRadius: BorderRadius.circular(16),
               ),
               child: TextButton.icon(
-                onPressed: () {},
+                onPressed: () => _downloadMaterial(context),
                 icon: Icon(Icons.download_rounded, color: primaryRed),
                 label: Text(
                   "Unduh Materi",
@@ -635,6 +664,164 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> with TickerProv
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showMoreMenu(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(20),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(10)),
+            ),
+            const SizedBox(height: 20),
+            _buildMenuItem(Icons.share_rounded, "Bagikan Kursus", Colors.blue, () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Row(children: [Icon(Icons.share_rounded, color: Colors.white), SizedBox(width: 12), Text("Link kursus disalin!")]),
+                  backgroundColor: Colors.blue,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  margin: const EdgeInsets.all(16),
+                ),
+              );
+            }),
+            _buildMenuItem(Icons.download_rounded, "Unduh Semua Materi", Colors.green, () {
+              Navigator.pop(context);
+              _downloadMaterial(context);
+            }),
+            _buildMenuItem(Icons.flag_rounded, "Laporkan Masalah", Colors.orange, () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Row(children: [Icon(Icons.flag_rounded, color: Colors.white), SizedBox(width: 12), Text("Terima kasih atas laporan Anda")]),
+                  backgroundColor: Colors.orange,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  margin: const EdgeInsets.all(16),
+                ),
+              );
+            }),
+            const SizedBox(height: 10),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMenuItem(IconData icon, String title, Color color, VoidCallback onTap) {
+    return ListTile(
+      leading: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+        child: Icon(icon, color: color, size: 22),
+      ),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600, color: textMain)),
+      trailing: Icon(Icons.arrow_forward_ios_rounded, size: 16, color: textMuted),
+      onTap: onTap,
+    );
+  }
+
+  void _downloadMaterial(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)),
+            const SizedBox(width: 16),
+            const Expanded(child: Text("Mengunduh materi...", style: TextStyle(fontWeight: FontWeight.w500))),
+          ],
+        ),
+        backgroundColor: primaryRed,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.all(16),
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  void _showVideoPlayer(BuildContext context, String title) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        contentPadding: EdgeInsets.zero,
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              height: 180,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(colors: [primaryRed, secondaryRed]),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), shape: BoxShape.circle),
+                      child: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 48),
+                    ),
+                    const SizedBox(height: 12),
+                    Text("Memutar Video...", style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 14)),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: textMain), textAlign: TextAlign.center),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: ElevatedButton.styleFrom(backgroundColor: primaryRed, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                      child: const Text("Tutup", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showAssignmentInfo(BuildContext context, String title) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.assignment_rounded, color: Colors.white),
+            const SizedBox(width: 12),
+            Expanded(child: Text("Membuka: $title", style: const TextStyle(fontWeight: FontWeight.w500))),
+          ],
+        ),
+        backgroundColor: Colors.purple,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.all(16),
+        action: SnackBarAction(label: "Lihat", textColor: Colors.white, onPressed: () {}),
       ),
     );
   }

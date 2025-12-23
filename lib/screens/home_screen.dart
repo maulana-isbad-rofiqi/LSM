@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'my_courses_screen.dart';
 import 'notification_screen.dart';
 import 'profile_screen.dart';
+import 'course_detail_screen.dart';
 
 // Color Constants - Premium Palette
 const Color primaryRed = Color(0xFFB91C1C);
@@ -148,7 +149,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   const SizedBox(height: 28),
 
                   // ========== ANNOUNCEMENTS ==========
-                  _buildSectionTitleWithAction("📢 Pengumuman Terakhir", "Lihat Semua"),
+                  _buildSectionTitleWithAction(
+                    "📢 Pengumuman Terakhir", 
+                    "Lihat Semua",
+                    onTap: () => setState(() => _currentIndex = 2),
+                  ),
                   const SizedBox(height: 14),
                   _buildAnnouncementsCarousel(),
                   const SizedBox(height: 28),
@@ -368,7 +373,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildSectionTitleWithAction(String title, String actionText) {
+  Widget _buildSectionTitleWithAction(String title, String actionText, {VoidCallback? onTap}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -380,18 +385,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             color: textMain,
           ),
         ),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: primaryRed.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Text(
-            actionText,
-            style: TextStyle(
-              fontSize: 11,
-              color: primaryRed,
-              fontWeight: FontWeight.w600,
+        GestureDetector(
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: primaryRed.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              actionText,
+              style: TextStyle(
+                fontSize: 11,
+                color: primaryRed,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ),
@@ -726,138 +734,148 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         final progress = (item["progress"] as double);
         final color = item["color"] as Color;
         
-        return Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(18),
-            boxShadow: [
-              BoxShadow(
-                color: color.withOpacity(0.1),
-                blurRadius: 15,
-                offset: const Offset(0, 5),
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => CourseDetailScreen(title: item["name"] as String),
               ),
-            ],
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Course Icon
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      color.withOpacity(0.2),
-                      color.withOpacity(0.1),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(14),
+            );
+          },
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: [
+                BoxShadow(
+                  color: color.withOpacity(0.1),
+                  blurRadius: 15,
+                  offset: const Offset(0, 5),
                 ),
-                child: Center(
-                  child: Text(
-                    (item["name"] as String).substring(0, 2).toUpperCase(),
-                    style: TextStyle(
-                      color: color,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 14),
-              // Course Info
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: color.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            item["code"] as String,
-                            style: TextStyle(
-                              fontSize: 9,
-                              color: color,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        const Spacer(),
-                        Text(
-                          "${(progress * 100).toInt()}%",
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: color,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+              ],
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Course Icon
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        color.withOpacity(0.2),
+                        color.withOpacity(0.1),
                       ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    const SizedBox(height: 6),
-                    Text(
-                      item["name"] as String,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: textMain,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      item["id"] as String,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Center(
+                    child: Text(
+                      (item["name"] as String).substring(0, 2).toUpperCase(),
                       style: TextStyle(
-                        fontSize: 10,
-                        color: textMuted,
+                        color: color,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
                       ),
                     ),
-                    const SizedBox(height: 10),
-                    // Progress Bar
-                    Stack(
-                      children: [
-                        Container(
-                          height: 6,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: color.withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        FractionallySizedBox(
-                          widthFactor: progress,
-                          child: Container(
-                            height: 6,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                // Course Info
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [color, color.withOpacity(0.7)],
+                              color: color.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              item["code"] as String,
+                              style: TextStyle(
+                                fontSize: 9,
+                                color: color,
+                                fontWeight: FontWeight.w600,
                               ),
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: color.withOpacity(0.4),
-                                  blurRadius: 6,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
                             ),
                           ),
+                          const Spacer(),
+                          Text(
+                            "${(progress * 100).toInt()}%",
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: color,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        item["name"] as String,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: textMain,
                         ),
-                      ],
-                    ),
-                  ],
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        item["id"] as String,
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: textMuted,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      // Progress Bar
+                      Stack(
+                        children: [
+                          Container(
+                            height: 6,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: color.withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          FractionallySizedBox(
+                            widthFactor: progress,
+                            child: Container(
+                              height: 6,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [color, color.withOpacity(0.7)],
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: color.withOpacity(0.4),
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },

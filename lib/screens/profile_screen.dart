@@ -892,38 +892,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     // Profile Picture
                     Center(
-                      child: Stack(
-                        children: [
-                          Container(
-                            width: 100,
-                            height: 100,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: primaryRed, width: 3),
-                              image: const DecorationImage(
-                                image: AssetImage("assets/images/profil.jpg"),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            right: 0,
-                            child: Container(
-                              padding: const EdgeInsets.all(8),
+                      child: GestureDetector(
+                        onTap: () => _showPhotoOptions(context),
+                        child: Stack(
+                          children: [
+                            Container(
+                              width: 100,
+                              height: 100,
                               decoration: BoxDecoration(
-                                color: primaryRed,
                                 shape: BoxShape.circle,
-                                border: Border.all(color: Colors.white, width: 2),
+                                border: Border.all(color: primaryRed, width: 3),
+                                image: const DecorationImage(
+                                  image: AssetImage("assets/images/profil.jpg"),
+                                  fit: BoxFit.cover,
+                                ),
                               ),
-                              child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 16),
                             ),
-                          ),
-                        ],
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: primaryRed,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: Colors.white, width: 2),
+                                ),
+                                child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 16),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text("Tap untuk ganti foto", style: TextStyle(fontSize: 12, color: textMuted)),
+                    GestureDetector(
+                      onTap: () => _showPhotoOptions(context),
+                      child: Text("Tap untuk ganti foto", style: TextStyle(fontSize: 12, color: primaryRed, fontWeight: FontWeight.w500)),
+                    ),
                     const SizedBox(height: 24),
                     // Form Fields
                     _buildEditField(nameController, "Nama Lengkap", Icons.person_rounded),
@@ -1007,6 +1013,136 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        ),
+      ),
+    );
+  }
+
+  void _showPhotoOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => Container(
+        constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.55),
+        padding: const EdgeInsets.all(20),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(10)),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(color: primaryRed.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                    child: const Icon(Icons.photo_camera_rounded, color: primaryRed, size: 24),
+                  ),
+                  const SizedBox(width: 14),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Ubah Foto Profil", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textMain)),
+                        Text("Pilih sumber foto", style: TextStyle(fontSize: 12, color: textMuted)),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: Icon(Icons.close_rounded, color: textMuted),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              _buildPhotoOption(Icons.camera_alt_rounded, "Ambil dari Kamera", "Foto langsung menggunakan kamera", Colors.blue, () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Row(children: [Icon(Icons.camera_alt_rounded, color: Colors.white), SizedBox(width: 12), Text("Membuka kamera...", style: TextStyle(fontWeight: FontWeight.w500))]),
+                    backgroundColor: Colors.blue,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    margin: const EdgeInsets.all(16),
+                  ),
+                );
+              }),
+              const SizedBox(height: 12),
+              _buildPhotoOption(Icons.photo_library_rounded, "Pilih dari Galeri", "Pilih foto dari galeri perangkat", Colors.purple, () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Row(children: [Icon(Icons.photo_library_rounded, color: Colors.white), SizedBox(width: 12), Text("Membuka galeri...", style: TextStyle(fontWeight: FontWeight.w500))]),
+                    backgroundColor: Colors.purple,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    margin: const EdgeInsets.all(16),
+                  ),
+                );
+              }),
+              const SizedBox(height: 12),
+              _buildPhotoOption(Icons.delete_rounded, "Hapus Foto", "Gunakan foto default", Colors.red, () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Row(children: [Icon(Icons.check_circle_rounded, color: Colors.white), SizedBox(width: 12), Text("Foto profil dihapus", style: TextStyle(fontWeight: FontWeight.w500))]),
+                    backgroundColor: Colors.orange,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    margin: const EdgeInsets.all(16),
+                  ),
+                );
+              }),
+              SizedBox(height: MediaQuery.of(context).padding.bottom + 10),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPhotoOption(IconData icon, String title, String subtitle, Color color, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: color.withOpacity(0.2)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: color, size: 24),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: textMain)),
+                  const SizedBox(height: 2),
+                  Text(subtitle, style: TextStyle(fontSize: 11, color: textMuted)),
+                ],
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios_rounded, size: 16, color: color),
+          ],
         ),
       ),
     );
